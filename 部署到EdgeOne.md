@@ -1,19 +1,24 @@
 # 部署到 EdgeOne Pages
 
 本项目原本是 Cloudflare Workers + Durable Objects 架构。EdgeOne Pages **没有 Durable Objects**，
-所以 `edgeone/` 目录是为 EdgeOne 重写的版本：**静态前端 + 一个边缘函数 + KV 存储**。
+所以 `edgeone/` 目录是为 EdgeOne 重写的版本：**静态前端 + 一个边缘函数 + Blob 存储**。
 
 ```
 edgeone/
+├── package.json                # 声明 @edgeone/pages-blob 依赖
 ├── index.html                  # 前端（与 Cloudflare 版相同，API 改成同源相对路径）
 └── functions/
     └── api/
-        └── [[default]].js      # 接管所有 /api/* 请求的边缘函数，房间状态存到 KV
+        └── [[default]].js      # 接管所有 /api/* 请求的边缘函数，房间状态存到 Blob
 ```
 
 跟 Cloudflare 版的区别：
-- 房间状态从 Durable Object storage 改成 **EdgeOne KV**（key 为 `room_<房号>`）。
+- 房间状态从 Durable Object storage 改成 **EdgeOne Blob**（store: `bohe-rooms`，key: `room_<房号>`）。
 - 前端和后端同域，前端 `API = ""` 用相对路径，不再需要填后端地址、也不需要 CORS 配置。
+
+### 为什么用 Blob 而不是 KV？
+- **Blob 首次调用即自动创建，无需在控制台开通/创建命名空间/绑定**（KV 需要先开通服务、建命名空间、再绑定变量名，流程更繁琐，且开通偶尔会卡住）。
+- 读取用 `consistency: "strong"`（代码里已设为默认），建房后玩家能**立即**读到、进房后主持人能**立即**看到——比 KV 的 60 秒最终一致更适合实时建房/进房。
 
 ---
 
@@ -25,30 +30,28 @@ edgeone login           # 浏览器扫码登录腾讯云 EdgeOne
 edgeone whoami          # 确认已登录
 ```
 
-## 二、创建并绑定 KV 命名空间（关键，必须先做）
+## 二、安装依赖
 
-边缘函数里通过全局变量 `bohe_kv` 访问 KV，**没绑定会直接报错**。
+边缘函数用到 `@edgeone/pages-blob`，部署前先在 `edgeone/` 里装好（已在仓库 .gitignore 忽略 node_modules，clone 后需自己装）：
 
-1. 进入 [EdgeOne Pages 控制台](https://console.cloud.tencent.com/edgeone/pages) → 你的项目 → **KV 存储**。
-2. **创建命名空间**（名字随意，例如 `bohe-jubensha`）。
-3. 在项目里**绑定该命名空间**，变量名务必填 **`bohe_kv`**（要和代码里一致）。
-   - 如果想换变量名，把 `edgeone/functions/api/[[default]].js` 里的 `globalThis.bohe_kv` 一起改掉。
-
-> KV 为最终一致性（60 秒内全球同步），同一边缘节点内读写很快。小规模剧本杀（同一局玩家通常命中同一节点）完全够用。
+```bash
+cd edgeone && npm install && cd ..
+```
 
 ## 三、部署
 
-在仓库根目录运行（部署 `edgeone/` 目录）：
+在仓库根目录运行（用绝对路径最稳，避免 CLI 把相对路径解析错）：
 
 ```bash
-edgeone pages deploy ./edgeone -n bohe-jubensha
+edgeone pages deploy /绝对路径/到/edgeone -n bohe-jubensha
 ```
 
 - `-n` 指定项目名；首次部署会创建项目，之后同名即为更新。
-- 也可以直接在 EdgeOne Pages 控制台用 **Git 导入**：连接本仓库，构建输出目录设为 `edgeone`，KV 绑定按第二步配置。
+- Blob 存储**无需任何控制台配置**，函数第一次写入时自动创建 `bohe-rooms` 这个 store。
+- 也可在控制台用 **Git 导入**：连接本仓库，构建输出目录设为 `edgeone`，安装命令 `npm install`。
 
-部署完成后 CLI 会给出访问地址（`https://<项目>.edgeone.app` 之类）。直接打开即可：
-主持人建房 → 把房号/链接发群里 → 玩家进房 → 满 5 人后分配角色。
+部署完成后 CLI 会输出访问地址（形如 `https://bohe-jubensha-xxxx.edgeone.cool`）。
+直接打开即可：主持人建房 → 把房号/链接发群里 → 玩家进房 → 满 5 人后分配角色。
 
 ## 四、本地调试（可选）
 
@@ -56,12 +59,15 @@ edgeone pages deploy ./edgeone -n bohe-jubensha
 edgeone pages dev ./edgeone
 ```
 
-本地需要 KV 时，按 CLI 提示配置；或先在线上验证。
-
 ---
+
+## 当前线上地址
+
+- 站点：https://bohe-jubensha-mggnokgp.edgeone.cool
+- 控制台项目：bohe-jubensha（Project ID: makers-m9schhpmljkj）
 
 ## 排错
 
-- 接口报 `KV 未绑定`：说明命名空间没绑定或变量名不是 `bohe_kv`，回到第二步。
-- 接口 404 `房间不存在`：房号输错，或该房间记录已被清理。
+- 接口报 `房间不存在或已过期`：房号输错，或该房间记录被清理。
 - 满 5 人才能点「随机分配」——角色数量由 `[[default]].js` 里的 `ROLES` 决定（当前 5 人）。
+- 想换本子：改 `[[default]].js` 里的 `ROLES / STAGES / CLUES`，重新部署即可。

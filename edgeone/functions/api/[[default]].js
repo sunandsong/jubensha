@@ -1,8 +1,11 @@
 /**
  * 薄荷镇剧本杀 · EdgeOne Pages 边缘函数后端（catch-all 路由）
  * -------------------------------------------------------------
- * EdgeOne Pages 没有 Cloudflare 的 Durable Objects，这里改用 EdgeOne KV
- * 存储房间状态。每个房号 = KV 里的一条记录（key: room_<房号>）。
+ * EdgeOne Pages 没有 Cloudflare 的 Durable Objects，这里改用 EdgeOne Blob
+ * 存储房间状态。每个房号 = 一条 Blob 记录（key: room_<房号>）。
+ *
+ * 用 Blob 而不是 KV：Blob 首次调用自动创建、无需在控制台开通/绑定，
+ * 且读取用 strong 一致性能立即读到最新写入（适合建房/进房这种实时操作）。
  *
  * 这个文件挂在 functions/api/[[default]].js，会接管所有 /api/* 请求，
  * 在函数内部按路径分发——逻辑与原 Cloudflare Worker + GameRoom 一致。
@@ -14,10 +17,9 @@
  *   GET  /api/room/:code/my-role?token=   玩家拉取“自己的”角色剧本
  *   GET  /api/room/:code/state            拉取公共状态（不含任何秘密）
  *   POST /api/room/:code/stage            主持人推进/回退阶段
- *
- * ⚠️ 部署前必须在 EdgeOne Pages 控制台创建 KV 命名空间，并把变量名绑定为
- *    bohe_kv（见 部署到EdgeOne.md）。
  */
+
+import { getStore } from "@edgeone/pages-blob";
 
 /* ========== 本子数据 ========== */
 const ROLES = [
@@ -87,22 +89,20 @@ function json(data, status = 200) {
   });
 }
 
-/* ========== KV 房间状态读写 ========== */
-// KV 键名只允许数字/字母/下划线，所以用 room_<房号>
+/* ========== Blob 房间状态读写 ========== */
+// 用 strong 一致性，确保建房后玩家立刻能读到、进房后主持人立刻能看到
+function rooms() {
+  return getStore({ name: "bohe-rooms", consistency: "strong" });
+}
 function roomKey(code) {
   return "room_" + code;
 }
-async function loadRoom(kv, code) {
-  const raw = await kv.get(roomKey(code));
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
+async function loadRoom(store, code) {
+  // get 在键不存在时返回 null
+  return (await store.get(roomKey(code), { type: "json" })) || null;
 }
-async function saveRoom(kv, code, data) {
-  await kv.put(roomKey(code), JSON.stringify(data));
+async function saveRoom(store, code, data) {
+  await store.setJSON(roomKey(code), data);
 }
 function newRoom() {
   return {
@@ -143,15 +143,7 @@ export async function onRequest(context) {
     return new Response(null, { headers: CORS });
   }
 
-  // 取得 KV 绑定（控制台里把命名空间变量名绑定为 bohe_kv）
-  const kv = globalThis.bohe_kv;
-  if (!kv) {
-    return json(
-      { error: "KV 未绑定：请在 EdgeOne Pages 控制台创建 KV 命名空间并绑定变量名 bohe_kv" },
-      500
-    );
-  }
-
+  const store = rooms();
   const url = new URL(request.url);
   const path = url.pathname;
 
@@ -159,7 +151,7 @@ export async function onRequest(context) {
     // ---- 建房 ----
     if (path === "/api/room/create" && request.method === "POST") {
       const code = String(Math.floor(1000 + Math.random() * 9000));
-      await saveRoom(kv, code, newRoom());
+      await saveRoom(store, code, newRoom());
       return json({ code, maxPlayers: ROLES.length });
     }
 
@@ -168,7 +160,7 @@ export async function onRequest(context) {
     if (m) {
       const code = m[1];
       const action = m[2].split("?")[0];
-      const data = await loadRoom(kv, code);
+      const data = await loadRoom(store, code);
       if (!data) return json({ error: "房间不存在或已过期" }, 404);
 
       // 玩家进房
@@ -179,7 +171,7 @@ export async function onRequest(context) {
         const name = (body.name || "玩家").slice(0, 12);
         const token = crypto.randomUUID();
         data.players.push({ token, name });
-        await saveRoom(kv, code, data);
+        await saveRoom(store, code, data);
         return json({ token, seat: data.players.length });
       }
 
@@ -196,7 +188,7 @@ export async function onRequest(context) {
         data.assignment = data.players.map((p, i) => ({ token: p.token, roleId: ids[i] }));
         data.assigned = true;
         data.stage = 0;
-        await saveRoom(kv, code, data);
+        await saveRoom(store, code, data);
         return json({ assigned: true });
       }
 
@@ -232,7 +224,7 @@ export async function onRequest(context) {
         const dir = body.dir; // "next" | "prev"
         if (dir === "next" && data.stage < STAGES.length - 1) data.stage++;
         if (dir === "prev" && data.stage > -1) data.stage--;
-        await saveRoom(kv, code, data);
+        await saveRoom(store, code, data);
         return json({ stage: data.stage });
       }
 
