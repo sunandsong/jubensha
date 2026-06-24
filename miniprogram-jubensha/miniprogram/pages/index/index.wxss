@@ -59,6 +59,18 @@
 .ph { color: #8fa79a; }
 .hint { font-size: 23rpx; color: #8fa79a; line-height: 1.7; margin-top: 6rpx; }
 
+/* 本子选择卡 */
+.script {
+  background: #1d2a23; border: 1rpx solid #2a3b32; border-radius: 22rpx;
+  padding: 26rpx; margin-bottom: 20rpx;
+}
+.script:active { border-color: #3f8f6f; }
+.script-top { display: flex; align-items: center; }
+.script-title { font-size: 30rpx; font-weight: 700; color: #e8efe9; }
+.script-players { margin-left: auto; font-size: 22rpx; color: #7fd1ae; background: rgba(127,209,174,0.15); padding: 4rpx 16rpx; border-radius: 40rpx; }
+.script-intro { font-size: 24rpx; color: #8fa79a; line-height: 1.6; margin: 14rpx 0 16rpx; }
+.script-go { font-size: 24rpx; font-weight: 700; color: #7fd1ae; }
+
 /* 房号 + 分享 */
 .room-code {
   font-family: monospace; font-size: 64rpx; font-weight: 800; letter-spacing: 0.32em;

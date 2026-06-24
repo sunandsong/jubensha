@@ -24,10 +24,12 @@ Page({
     phase: "entry", // entry | host | player
 
     // 入口
+    catalog: [], // 本子目录 [{id,title,intro,players}]
     joinCode: "",
     joinName: "",
 
     // 主持人
+    scriptTitle: "",
     hostCode: "",
     hostCodeSpaced: "",
     seats: [],
@@ -43,6 +45,13 @@ Page({
     role: null, // { av, name, title, public, scene:{t,b}, secret, mission }
     pFlow: null,
     clues: [],
+  },
+
+  onLoad() {
+    // 拉取本子目录
+    call("catalog")
+      .then((r) => this.setData({ catalog: r.catalog }))
+      .catch((e) => toast(e.message));
   },
 
   onUnload() {
@@ -68,13 +77,15 @@ Page({
   },
 
   /* ---------- 主持人 ---------- */
-  async hostCreate() {
+  async hostCreate(e) {
+    const script = e.currentTarget.dataset.id; // 选中的本子 id
     wx.showLoading({ title: "建房中…" });
     try {
-      const r = await call("create");
+      const r = await call("create", { script });
       wx.hideLoading();
       this.setData({
         phase: "host",
+        scriptTitle: r.scriptTitle,
         hostCode: r.code,
         hostCodeSpaced: r.code.split("").join(" "),
         maxPlayers: r.maxPlayers,
@@ -173,6 +184,7 @@ Page({
     try {
       const { state: s } = await call("state", { code: this._myRoom });
       this.setData({
+        scriptTitle: s.scriptTitle,
         waitInfo: "房间里已有 " + s.playerCount + " / " + s.maxPlayers + " 人……",
       });
       if (s.assigned && !this._gotRole) {

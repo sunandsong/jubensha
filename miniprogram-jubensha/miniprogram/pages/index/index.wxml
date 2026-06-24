@@ -1,20 +1,32 @@
 <view class="page">
 
   <view class="header">
-    <view class="kicker">薄 荷 镇 · 推 理 现 场</view>
-    <view class="h1">薄荷镇的最后一夜</view>
-    <view class="sub">山坡上的白色别墅，镇外的常青精神病院</view>
+    <view class="kicker">群 本 杀 · 推 理 现 场</view>
+    <view class="h1">群本杀</view>
+    <view class="sub">拉个群，选个本，开一局推理</view>
   </view>
 
   <!-- ===== 入口 ===== -->
   <view wx:if="{{phase === 'entry'}}" class="wrap">
-    <view class="card center">
-      <text class="badge">开始一局</text>
-      <view class="h2 h2-center"><text class="dot"></text>你是？</view>
-      <button class="btn btn-primary block" bindtap="hostCreate">🎬 我是主持人，建房</button>
-      <view class="hint">建房后把房号发到群里，玩家输房号进房</view>
-      <view class="gap"></view>
-      <input class="input" placeholder="输入 4 位房号加入" placeholder-class="ph"
+    <!-- 主持人：选本建房 -->
+    <view class="card">
+      <view class="h2"><text class="dot"></text>当主持人 · 选个本开局</view>
+      <view wx:for="{{catalog}}" wx:key="id" class="script" data-id="{{item.id}}" bindtap="hostCreate">
+        <view class="script-top">
+          <text class="script-title">{{item.title}}</text>
+          <text class="script-players">{{item.players}} 人</text>
+        </view>
+        <view class="script-intro">{{item.intro}}</view>
+        <view class="script-go">点此建房 →</view>
+      </view>
+      <view wx:if="{{!catalog.length}}" class="empty">本子加载中…</view>
+      <view class="hint">建房后把房号发到群里，朋友输房号进房</view>
+    </view>
+
+    <!-- 玩家：输房号加入 -->
+    <view class="card">
+      <view class="h2"><text class="dot"></text>当玩家 · 加入房间</view>
+      <input class="input" placeholder="输入 4 位房号" placeholder-class="ph"
              type="number" maxlength="4" value="{{joinCode}}" bindinput="onJoinCode" />
       <input class="input" placeholder="你的昵称" placeholder-class="ph"
              maxlength="12" value="{{joinName}}" bindinput="onJoinName" />
@@ -25,7 +37,7 @@
   <!-- ===== 主持人 ===== -->
   <view wx:if="{{phase === 'host'}}" class="wrap">
     <view class="card center">
-      <text class="badge">主持人面板</text>
+      <text class="badge">主持人面板 · {{scriptTitle}}</text>
       <view class="room-code">{{hostCodeSpaced}}</view>
       <view class="hint">把房号告诉群里的朋友，让他们加入</view>
       <view class="share" bindtap="copyCode">点此复制房号</view>
@@ -64,7 +76,7 @@
   <!-- ===== 玩家 ===== -->
   <view wx:if="{{phase === 'player'}}" class="wrap">
     <view wx:if="{{waiting}}" class="card center">
-      <text class="badge">已进房</text>
+      <text class="badge">已进房 · {{scriptTitle}}</text>
       <view class="h2 h2-center"><text class="dot"></text>等待主持人分配角色</view>
       <view class="hint">{{waitInfo}}</view>
     </view>
