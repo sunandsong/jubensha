@@ -155,9 +155,9 @@
 <div class="toast" id="toast"></div>
 
 <script>
-/* ========== 配置：把这里换成你部署后的 Worker 地址 ========== */
-const API = "https://bohe-jubensha.YOUR-SUBDOMAIN.workers.dev";
-/* 例如：const API = "https://bohe-jubensha.zhangsong.workers.dev"; */
+/* ========== 配置 ==========
+ * 前端与 Worker 同域部署（Worker 既托管本页又处理 /api），用相对路径即可。 */
+const API = "";
 
 /* ========== 通用 ========== */
 function toast(msg){

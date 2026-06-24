@@ -2,6 +2,11 @@ name = "bohe-jubensha"
 main = "src/index.js"
 compatibility_date = "2026-03-01"
 
+# 静态资源：让同一个 Worker 既托管前端 index.html，又处理 /api/*。
+# 访问 /、/index.html 等命中静态文件；未命中的（如 /api/...）回落到 Worker。
+[assets]
+directory = "../public"
+
 # Durable Object 绑定：前端通过 env.GAME_ROOM 访问房间
 [[durable_objects.bindings]]
 name = "GAME_ROOM"
