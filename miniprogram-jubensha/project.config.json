@@ -10,7 +10,7 @@
     "newFeature": true
   },
   "appid": "你的小程序AppID",
-  "projectname": "bohe-jubensha",
-  "description": "薄荷镇的最后一夜 · 线上剧本杀（微信小程序版）",
+  "projectname": "qunbensha",
+  "description": "群本杀 · 在微信群里玩的线上剧本杀（小程序版）",
   "compileType": "miniprogram"
 }
