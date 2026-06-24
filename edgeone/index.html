@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>薄荷镇的最后一夜</title>
+<style>
+  :root{
+    --bg:#0e1512;--panel:#16201b;--panel2:#1d2a23;
+    --mint:#7fd1ae;--mint-deep:#3f8f6f;--rose:#c97b7b;--gold:#d9b46a;
+    --ink:#e8efe9;--ink-dim:#8fa79a;--line:#2a3b32;
+    --shadow:0 8px 30px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased;}
+  body{max-width:480px;margin:0 auto;min-height:100vh;
+    background:radial-gradient(1200px 500px at 50% -10%, rgba(127,209,174,.10), transparent 60%),var(--bg);padding-bottom:40px;}
+  .wrap{padding:0 18px;}
+  header{padding:24px 18px 12px;text-align:center;}
+  .kicker{font-size:11px;letter-spacing:.42em;color:var(--mint-deep);text-transform:uppercase;margin-bottom:9px;}
+  h1{margin:0;font-size:26px;font-weight:800;letter-spacing:.04em;background:linear-gradient(180deg,#eafff4,#9fdcc2);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .sub{font-size:12px;color:var(--ink-dim);margin-top:7px;line-height:1.7;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin:14px 0;box-shadow:var(--shadow);}
+  .card h2{margin:0 0 12px;font-size:15px;letter-spacing:.05em;display:flex;align-items:center;gap:8px;}
+  .card h2 .dot{width:7px;height:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 8px var(--mint);}
+  .row{display:flex;gap:10px;}
+  .btn{flex:1;border:none;border-radius:12px;padding:13px 14px;font-size:14px;font-weight:700;cursor:pointer;transition:.15s;font-family:inherit;letter-spacing:.04em;}
+  .btn-primary{background:linear-gradient(180deg,var(--mint),var(--mint-deep));color:#06120c;}
+  .btn-primary:active{transform:scale(.97);}
+  .btn-ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line);}
+  .btn:disabled{opacity:.35;cursor:not-allowed;}
+  input{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:13px 14px;color:var(--ink);font-size:15px;font-family:inherit;margin-bottom:10px;}
+  input:focus{outline:none;border-color:var(--mint-deep);}
+  .room-code{font-family:"SF Mono",ui-monospace,monospace;font-size:32px;font-weight:800;letter-spacing:.32em;color:var(--mint);text-align:center;padding:6px 0 4px;}
+  .hint{font-size:11.5px;color:var(--ink-dim);line-height:1.7;text-align:center;margin-top:2px;}
+  .seats{display:flex;flex-direction:column;gap:9px;margin-top:6px;}
+  .seat{display:flex;align-items:center;gap:11px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:11px 13px;}
+  .seat.empty-seat{opacity:.4;border-style:dashed;}
+  .seat .sn{font-size:14px;font-weight:600;}.seat .si{margin-left:auto;font-size:11px;color:var(--ink-dim);}.seat .av{font-size:22px;}
+  .scene{font-size:11px;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin:16px 0 6px;}
+  .scene:first-child{margin-top:4px;}
+  .ptext{font-size:13.5px;line-height:1.85;white-space:pre-line;}
+  .secret{background:linear-gradient(180deg,rgba(201,123,123,.10),rgba(201,123,123,.04));border:1px solid rgba(201,123,123,.35);border-radius:12px;padding:13px 14px;margin-top:8px;}
+  .secret .lbl{font-size:11px;letter-spacing:.2em;color:var(--rose);margin-bottom:6px;}
+  .mission{background:linear-gradient(180deg,rgba(217,180,106,.10),rgba(217,180,106,.04));border:1px solid rgba(217,180,106,.35);border-radius:12px;padding:13px 14px;margin-top:8px;}
+  .mission .lbl{font-size:11px;letter-spacing:.2em;color:var(--gold);margin-bottom:6px;}
+  .stages{display:flex;gap:6px;margin:6px 0 14px;}
+  .stage-pip{flex:1;height:5px;border-radius:3px;background:var(--line);transition:.3s;}
+  .stage-pip.done{background:var(--mint-deep);}.stage-pip.cur{background:var(--mint);box-shadow:0 0 8px var(--mint);}
+  .stage-name{font-size:12px;color:var(--mint);letter-spacing:.1em;margin-bottom:2px;}
+  .stage-desc{font-size:12px;color:var(--ink-dim);line-height:1.6;}
+  .clue{border:1px solid var(--line);border-radius:12px;padding:13px 14px;margin:9px 0;background:var(--panel2);transition:.3s;}
+  .clue.locked{opacity:.45;}
+  .clue .ch{font-size:12.5px;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
+  .clue .cb{font-size:12.5px;line-height:1.7;color:var(--ink-dim);margin-top:7px;}
+  .tag{font-size:10px;padding:2px 8px;border-radius:20px;letter-spacing:.06em;}
+  .tag.open{background:rgba(127,209,174,.18);color:var(--mint);}.tag.lock{background:#222e26;color:var(--ink-dim);}
+  .viewer{background:linear-gradient(90deg,rgba(127,209,174,.14),transparent);border:1px solid var(--line);border-radius:13px;padding:13px 14px;margin:14px 0;display:flex;align-items:center;gap:11px;}
+  .viewer .av{font-size:28px;}.viewer .vn{font-size:15px;font-weight:700;}.viewer .vt{font-size:11px;color:var(--ink-dim);margin-top:1px;}
+  .hidden{display:none;}.center{text-align:center;}.spacer{height:6px;}
+  .empty{text-align:center;color:var(--ink-dim);font-size:13px;padding:30px 10px;line-height:1.8;}
+  .badge{display:inline-block;font-size:10px;background:#243227;color:var(--mint);padding:3px 9px;border-radius:20px;letter-spacing:.1em;margin-bottom:10px;}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#243227;color:var(--ink);padding:11px 18px;border-radius:30px;font-size:13px;border:1px solid var(--mint-deep);z-index:99;opacity:0;transition:.3s;pointer-events:none;}
+  .toast.show{opacity:1;}
+  .share-link{font-size:11px;color:var(--mint);word-break:break-all;background:#13201a;border:1px dashed var(--line);border-radius:10px;padding:10px 12px;margin-top:10px;line-height:1.6;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">薄 荷 镇 · 推 理 现 场</div>
+  <h1>薄荷镇的最后一夜</h1>
+  <div class="sub" id="subtitle">山坡上的白色别墅，镇外的常青精神病院</div>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 入口：选择身份 ===== -->
+  <section id="page-entry">
+    <div class="card center">
+      <span class="badge">开始一局</span>
+      <h2 style="justify-content:center"><span class="dot"></span>你是？</h2>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" onclick="hostCreate()" style="width:100%;margin-bottom:10px;">🎬 我是主持人，建房</button>
+      <div class="hint">建房后把房号发到群里，玩家输房号进房</div>
+      <div class="spacer"></div><div class="spacer"></div>
+      <input id="joinCode" placeholder="输入 4 位房号加入" inputmode="numeric" maxlength="4">
+      <input id="joinName" placeholder="你的昵称" maxlength="12">
+      <button class="btn btn-ghost" onclick="playerJoin()" style="width:100%;">🙋 加入房间</button>
+    </div>
+  </section>
+
+  <!-- ===== 主持人：大厅 + 控场 ===== -->
+  <section id="page-host" class="hidden">
+    <div class="card center">
+      <span class="badge">主持人面板</span>
+      <div class="room-code" id="hostCode">— — — —</div>
+      <div class="hint">把房号告诉群里的朋友，让他们加入</div>
+      <div class="share-link" id="shareLink" onclick="copyLink()">点此复制玩家加入链接</div>
+    </div>
+
+    <div class="card">
+      <h2><span class="dot"></span>玩家大厅 <span id="seatCount" style="margin-left:auto;font-size:12px;color:var(--ink-dim);font-weight:400;">0 / 5</span></h2>
+      <div class="seats" id="seatList"></div>
+      <div class="row" style="margin-top:13px;">
+        <button class="btn btn-primary" id="assignBtn" onclick="hostAssign()" disabled>🎲 随机分配角色</button>
+      </div>
+    </div>
+
+    <div class="card hidden" id="hostFlow">
+      <h2><span class="dot"></span>流程控制</h2>
+      <div class="stages" id="stagePips"></div>
+      <div class="stage-name" id="stageName">—</div>
+      <div class="stage-desc" id="stageDesc">—</div>
+      <div class="spacer"></div><div class="spacer"></div>
+      <div class="row">
+        <button class="btn btn-ghost" onclick="hostStage('prev')">← 上一幕</button>
+        <button class="btn btn-primary" onclick="hostStage('next')">下一幕 →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 玩家：等待 + 自己的剧本 ===== -->
+  <section id="page-player" class="hidden">
+    <div class="card center hidden" id="playerWait">
+      <span class="badge">已进房</span>
+      <h2 style="justify-content:center"><span class="dot"></span>等待主持人分配角色</h2>
+      <div class="hint" id="waitInfo">房间里已有 0 人……</div>
+    </div>
+
+    <div id="playerRole" class="hidden">
+      <div class="viewer">
+        <span class="av" id="pAv">👤</span>
+        <div><div class="vn" id="pName">—</div><div class="vt" id="pTitle">—</div></div>
+      </div>
+      <div class="card" id="pScript"></div>
+
+      <div class="card">
+        <h2><span class="dot"></span>当前进度</h2>
+        <div class="stages" id="pStagePips"></div>
+        <div class="stage-name" id="pStageName">—</div>
+        <div class="stage-desc" id="pStageDesc">—</div>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span>线索</h2>
+        <div id="pClues"></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ========== 配置 ==========
+ * EdgeOne Pages 上前端与边缘函数同域，直接用相对路径，无需填地址。 */
+const API = "";
+
+/* ========== 通用 ========== */
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+async function api(path, method='GET', body){
+  const res = await fetch(API+path, {
+    method,
+    headers: body?{'Content-Type':'application/json'}:{},
+    body: body?JSON.stringify(body):undefined,
+  });
+  const data = await res.json();
+  if(!res.ok) throw new Error(data.error||'请求失败');
+  return data;
+}
+function show(page){
+  ['entry','host','player'].forEach(p=>
+    document.getElementById('page-'+p).classList.toggle('hidden',p!==page));
+}
+function renderStages(pipsEl,nameEl,descEl,stage,info,total){
+  let pips='';
+  for(let i=0;i<total;i++){
+    let c='stage-pip'; if(i<stage)c+=' done'; if(i===stage)c+=' cur';
+    pips+=`<div class="${c}"></div>`;
+  }
+  pipsEl.innerHTML=pips;
+  nameEl.textContent = stage<0?'尚未开始':info.n;
+  descEl.textContent = stage<0?'等待主持人开始第一幕':info.d;
+}
+function renderClues(el,clues){
+  if(!clues||!clues.length){el.innerHTML='<div class="empty">线索将随剧情解锁</div>';return;}
+  el.innerHTML=clues.map(c=>`
+    <div class="clue ${c.unlocked?'':'locked'}">
+      <div class="ch">${c.unlocked?'🔍 '+c.title:'？？？ 线索 '+(c.index+1)}
+        <span class="tag ${c.unlocked?'open':'lock'}">${c.unlocked?'已解锁':'未解锁'}</span></div>
+      ${c.unlocked?`<div class="cb">${c.body}</div>`:''}
+    </div>`).join('');
+}
+
+/* ========== 主持人 ========== */
+let hostRoom=null, hostPoll=null;
+async function hostCreate(){
+  try{
+    const {code}=await api('/api/room/create','POST');
+    hostRoom=code;
+    document.getElementById('hostCode').textContent=code.split('').join(' ');
+    document.getElementById('shareLink').textContent =
+      location.origin+location.pathname+'?room='+code;
+    show('host');
+    hostPoll=setInterval(hostRefresh,1500);
+    hostRefresh();
+  }catch(e){toast(e.message);}
+}
+async function hostRefresh(){
+  if(!hostRoom) return;
+  const s=await api(`/api/room/${hostRoom}/state`);
+  // 大厅
+  let html='';
+  for(let i=0;i<s.maxPlayers;i++){
+    const p=s.players[i];
+    html+= p
+      ? `<div class="seat"><span class="av">🙋</span><span class="sn">${p.name}</span><span class="si">${s.assigned?'已分配':'已进房'}</span></div>`
+      : `<div class="seat empty-seat"><span class="av">🪑</span><span class="sn">空位 ${i+1}</span><span class="si">等待进房</span></div>`;
+  }
+  document.getElementById('seatList').innerHTML=html;
+  document.getElementById('seatCount').textContent=s.playerCount+' / '+s.maxPlayers;
+  document.getElementById('assignBtn').disabled = s.playerCount!==s.maxPlayers || s.assigned;
+  // 分配后显示控场
+  if(s.assigned){
+    document.getElementById('hostFlow').classList.remove('hidden');
+    renderStages(
+      document.getElementById('stagePips'),
+      document.getElementById('stageName'),
+      document.getElementById('stageDesc'),
+      s.stage, s.stageInfo, s.totalStages);
+  }
+}
+async function hostAssign(){
+  try{
+    await api(`/api/room/${hostRoom}/assign`,'POST');
+    toast('角色已随机分配！');
+    hostRefresh();
+  }catch(e){toast(e.message);}
+}
+async function hostStage(dir){
+  try{
+    await api(`/api/room/${hostRoom}/stage`,'POST',{dir});
+    hostRefresh();
+  }catch(e){toast(e.message);}
+}
+function copyLink(){
+  const link=location.origin+location.pathname+'?room='+hostRoom;
+  navigator.clipboard?.writeText(link).then(()=>toast('链接已复制'),()=>toast(link));
+}
+
+/* ========== 玩家 ========== */
+let myRoom=null, myToken=null, myPoll=null, gotRole=false;
+async function playerJoin(){
+  const code=document.getElementById('joinCode').value.trim();
+  const name=document.getElementById('joinName').value.trim()||'玩家';
+  if(!/^\d{4}$/.test(code)){toast('请输入 4 位房号');return;}
+  try{
+    const {token}=await api(`/api/room/${code}/join`,'POST',{name});
+    myRoom=code; myToken=token;
+    show('player');
+    document.getElementById('playerWait').classList.remove('hidden');
+    myPoll=setInterval(playerRefresh,1500);
+    playerRefresh();
+  }catch(e){toast(e.message);}
+}
+async function playerRefresh(){
+  if(!myRoom) return;
+  const s=await api(`/api/room/${myRoom}/state`);
+  document.getElementById('waitInfo').textContent=
+    `房间里已有 ${s.playerCount} / ${s.maxPlayers} 人……`;
+  if(s.assigned && !gotRole){
+    // 首次分配，拉取自己的角色
+    const r=await api(`/api/room/${myRoom}/my-role?token=${myToken}`);
+    gotRole=true;
+    document.getElementById('playerWait').classList.add('hidden');
+    document.getElementById('playerRole').classList.remove('hidden');
+    renderMyRole(r);
+  }
+  if(gotRole){
+    renderStages(
+      document.getElementById('pStagePips'),
+      document.getElementById('pStageName'),
+      document.getElementById('pStageDesc'),
+      s.stage, s.stageInfo, s.totalStages);
+    renderClues(document.getElementById('pClues'), s.clues);
+  }
+}
+function renderMyRole(r){
+  const role=r.role;
+  document.getElementById('pAv').textContent=role.av;
+  document.getElementById('pName').textContent=role.name;
+  document.getElementById('pTitle').textContent=role.title;
+  document.getElementById('pScript').innerHTML=`
+    <h2><span class="dot"></span>${role.name} · ${role.title}</h2>
+    <div class="scene">公开身份</div><div class="ptext">${role.public}</div>
+    <div class="scene">${role.scene.t}</div><div class="ptext">${role.scene.b}</div>
+    <div class="secret"><div class="lbl">🔒 你的秘密（仅你可见）</div><div class="ptext">${role.secret}</div></div>
+    <div class="mission"><div class="lbl">🎯 你的目标</div><div class="ptext">${role.mission}</div></div>`;
+}
+
+/* ========== 启动：带 ?room= 的链接直接进玩家加入流程 ========== */
+(function init(){
+  const params=new URLSearchParams(location.search);
+  const room=params.get('room');
+  if(room && /^\d{4}$/.test(room)){
+    document.getElementById('joinCode').value=room;
+    document.getElementById('subtitle').textContent='输入昵称，加入房间 '+room;
+  }
+})();
+</script>
+</body>
+</html>
