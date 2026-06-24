@@ -1,0 +1,13 @@
+name = "bohe-jubensha"
+main = "src/index.js"
+compatibility_date = "2026-03-01"
+
+# Durable Object 绑定：前端通过 env.GAME_ROOM 访问房间
+[[durable_objects.bindings]]
+name = "GAME_ROOM"
+class_name = "GameRoom"
+
+# 迁移：用 SQLite 后端的 DO（免费计划唯一可用的后端，必须这样声明）
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["GameRoom"]
