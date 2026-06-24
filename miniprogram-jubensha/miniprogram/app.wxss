@@ -1,0 +1,7 @@
+/* 全局：薄荷镇暗色调 */
+page {
+  background: #0e1512;
+  color: #e8efe9;
+  font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}

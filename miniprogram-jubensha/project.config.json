@@ -1,0 +1,16 @@
+{
+  "miniprogramRoot": "miniprogram/",
+  "cloudfunctionRoot": "cloudfunctions/",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "newFeature": true
+  },
+  "appid": "你的小程序AppID",
+  "projectname": "bohe-jubensha",
+  "description": "薄荷镇的最后一夜 · 线上剧本杀（微信小程序版）",
+  "compileType": "miniprogram"
+}

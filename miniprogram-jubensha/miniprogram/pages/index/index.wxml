@@ -1,0 +1,121 @@
+<view class="page">
+
+  <view class="header">
+    <view class="kicker">薄 荷 镇 · 推 理 现 场</view>
+    <view class="h1">薄荷镇的最后一夜</view>
+    <view class="sub">山坡上的白色别墅，镇外的常青精神病院</view>
+  </view>
+
+  <!-- ===== 入口 ===== -->
+  <view wx:if="{{phase === 'entry'}}" class="wrap">
+    <view class="card center">
+      <text class="badge">开始一局</text>
+      <view class="h2 h2-center"><text class="dot"></text>你是？</view>
+      <button class="btn btn-primary block" bindtap="hostCreate">🎬 我是主持人，建房</button>
+      <view class="hint">建房后把房号发到群里，玩家输房号进房</view>
+      <view class="gap"></view>
+      <input class="input" placeholder="输入 4 位房号加入" placeholder-class="ph"
+             type="number" maxlength="4" value="{{joinCode}}" bindinput="onJoinCode" />
+      <input class="input" placeholder="你的昵称" placeholder-class="ph"
+             maxlength="12" value="{{joinName}}" bindinput="onJoinName" />
+      <button class="btn btn-ghost block" bindtap="playerJoin">🙋 加入房间</button>
+    </view>
+  </view>
+
+  <!-- ===== 主持人 ===== -->
+  <view wx:if="{{phase === 'host'}}" class="wrap">
+    <view class="card center">
+      <text class="badge">主持人面板</text>
+      <view class="room-code">{{hostCodeSpaced}}</view>
+      <view class="hint">把房号告诉群里的朋友，让他们加入</view>
+      <view class="share" bindtap="copyCode">点此复制房号</view>
+    </view>
+
+    <view class="card">
+      <view class="h2">
+        <text class="dot"></text>玩家大厅
+        <text class="count">{{seatCount}} / {{maxPlayers}}</text>
+      </view>
+      <view class="seats">
+        <view wx:for="{{seats}}" wx:key="index" class="seat {{item.filled ? '' : 'seat-empty'}}">
+          <text class="av">{{item.filled ? '🙋' : '🪑'}}</text>
+          <text class="sn">{{item.name}}</text>
+          <text class="si">{{item.info}}</text>
+        </view>
+      </view>
+      <button class="btn btn-primary block mt" bindtap="hostAssign" disabled="{{!canAssign}}">🎲 随机分配角色</button>
+    </view>
+
+    <view wx:if="{{assigned && flow}}" class="card">
+      <view class="h2"><text class="dot"></text>流程控制</view>
+      <view class="stages">
+        <view wx:for="{{flow.pips}}" wx:key="index"
+              class="pip {{item.done ? 'pip-done' : ''}} {{item.cur ? 'pip-cur' : ''}}"></view>
+      </view>
+      <view class="stage-name">{{flow.name}}</view>
+      <view class="stage-desc">{{flow.desc}}</view>
+      <view class="row mt">
+        <button class="btn btn-ghost" bindtap="hostPrev">← 上一幕</button>
+        <button class="btn btn-primary" bindtap="hostNext">下一幕 →</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 玩家 ===== -->
+  <view wx:if="{{phase === 'player'}}" class="wrap">
+    <view wx:if="{{waiting}}" class="card center">
+      <text class="badge">已进房</text>
+      <view class="h2 h2-center"><text class="dot"></text>等待主持人分配角色</view>
+      <view class="hint">{{waitInfo}}</view>
+    </view>
+
+    <block wx:if="{{!waiting && role}}">
+      <view class="viewer">
+        <text class="av-lg">{{role.av}}</text>
+        <view>
+          <view class="vn">{{role.name}}</view>
+          <view class="vt">{{role.title}}</view>
+        </view>
+      </view>
+
+      <view class="card">
+        <view class="h2"><text class="dot"></text>{{role.name}} · {{role.title}}</view>
+        <view class="scene">公开身份</view>
+        <view class="ptext">{{role.public}}</view>
+        <view class="scene">{{role.scene.t}}</view>
+        <view class="ptext">{{role.scene.b}}</view>
+        <view class="secret">
+          <view class="lbl lbl-rose">🔒 你的秘密（仅你可见）</view>
+          <view class="ptext">{{role.secret}}</view>
+        </view>
+        <view class="mission">
+          <view class="lbl lbl-gold">🎯 你的目标</view>
+          <view class="ptext">{{role.mission}}</view>
+        </view>
+      </view>
+
+      <view wx:if="{{pFlow}}" class="card">
+        <view class="h2"><text class="dot"></text>当前进度</view>
+        <view class="stages">
+          <view wx:for="{{pFlow.pips}}" wx:key="index"
+                class="pip {{item.done ? 'pip-done' : ''}} {{item.cur ? 'pip-cur' : ''}}"></view>
+        </view>
+        <view class="stage-name">{{pFlow.name}}</view>
+        <view class="stage-desc">{{pFlow.desc}}</view>
+      </view>
+
+      <view class="card">
+        <view class="h2"><text class="dot"></text>线索</view>
+        <view wx:if="{{!clues.length}}" class="empty">线索将随剧情解锁</view>
+        <view wx:for="{{clues}}" wx:key="index" class="clue {{item.unlocked ? '' : 'clue-locked'}}">
+          <view class="ch">
+            <text>{{item.unlocked ? '🔍 ' + item.title : '？？？ 线索 ' + (item.index + 1)}}</text>
+            <text class="tag {{item.unlocked ? 'tag-open' : 'tag-lock'}}">{{item.unlocked ? '已解锁' : '未解锁'}}</text>
+          </view>
+          <view wx:if="{{item.unlocked}}" class="cb">{{item.body}}</view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+</view>

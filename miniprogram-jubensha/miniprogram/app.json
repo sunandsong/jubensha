@@ -1,0 +1,14 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "薄荷镇的最后一夜",
+    "navigationBarBackgroundColor": "#0e1512",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#0e1512",
+    "backgroundColorTop": "#0e1512",
+    "backgroundColorBottom": "#0e1512"
+  },
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,126 @@
+.page {
+  min-height: 100vh;
+  padding-bottom: 60rpx;
+  background: radial-gradient(600rpx 280rpx at 50% 0, rgba(127, 209, 174, 0.10), transparent 60%);
+}
+
+/* 头部 */
+.header { padding: 40rpx 36rpx 16rpx; text-align: center; }
+.kicker { font-size: 22rpx; letter-spacing: 0.42em; color: #3f8f6f; }
+.h1 { margin-top: 16rpx; font-size: 50rpx; font-weight: 800; letter-spacing: 0.04em; color: #c9f0dd; }
+.sub { font-size: 24rpx; color: #8fa79a; margin-top: 14rpx; line-height: 1.7; }
+
+.wrap { padding: 0 36rpx; }
+
+/* 卡片 */
+.card {
+  background: #16201b;
+  border: 1rpx solid #2a3b32;
+  border-radius: 28rpx;
+  padding: 34rpx;
+  margin: 26rpx 0;
+  box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.45);
+}
+.center { text-align: center; }
+.gap { height: 24rpx; }
+.mt { margin-top: 24rpx; }
+
+.badge {
+  display: inline-block; font-size: 20rpx; background: #243227; color: #7fd1ae;
+  padding: 6rpx 18rpx; border-radius: 40rpx; letter-spacing: 0.1em; margin-bottom: 18rpx;
+}
+
+.h2 {
+  display: flex; align-items: center; gap: 14rpx;
+  font-size: 30rpx; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 22rpx;
+}
+.h2-center { justify-content: center; }
+.dot { width: 14rpx; height: 14rpx; border-radius: 50%; background: #7fd1ae; box-shadow: 0 0 14rpx #7fd1ae; }
+.count { margin-left: auto; font-size: 24rpx; color: #8fa79a; font-weight: 400; }
+
+/* 按钮 */
+.btn {
+  border: none; border-radius: 22rpx; padding: 26rpx 0; font-size: 30rpx; font-weight: 700;
+  letter-spacing: 0.04em; line-height: 1.2;
+}
+.btn::after { border: none; }
+.btn-primary { background: linear-gradient(180deg, #7fd1ae, #3f8f6f); color: #06120c; }
+.btn-ghost { background: #1d2a23; color: #e8efe9; border: 1rpx solid #2a3b32; }
+.btn[disabled] { opacity: 0.35; }
+.block { width: 100%; display: block; margin-bottom: 18rpx; }
+.row { display: flex; gap: 20rpx; }
+.row .btn { flex: 1; }
+
+/* 输入框 */
+.input {
+  background: #1d2a23; border: 1rpx solid #2a3b32; border-radius: 22rpx;
+  padding: 26rpx 28rpx; color: #e8efe9; font-size: 30rpx; margin-bottom: 20rpx;
+}
+.ph { color: #8fa79a; }
+.hint { font-size: 23rpx; color: #8fa79a; line-height: 1.7; margin-top: 6rpx; }
+
+/* 房号 + 分享 */
+.room-code {
+  font-family: monospace; font-size: 64rpx; font-weight: 800; letter-spacing: 0.32em;
+  color: #7fd1ae; padding: 12rpx 0 8rpx;
+}
+.share {
+  font-size: 23rpx; color: #7fd1ae; background: #13201a; border: 1rpx dashed #2a3b32;
+  border-radius: 18rpx; padding: 20rpx; margin-top: 20rpx;
+}
+
+/* 大厅座位 */
+.seats { display: flex; flex-direction: column; gap: 18rpx; }
+.seat {
+  display: flex; align-items: center; gap: 22rpx;
+  background: #1d2a23; border: 1rpx solid #2a3b32; border-radius: 22rpx; padding: 22rpx 26rpx;
+}
+.seat-empty { opacity: 0.4; border-style: dashed; }
+.seat .av { font-size: 40rpx; }
+.seat .sn { font-size: 28rpx; font-weight: 600; }
+.seat .si { margin-left: auto; font-size: 22rpx; color: #8fa79a; }
+
+/* 阶段进度 */
+.stages { display: flex; gap: 12rpx; margin: 12rpx 0 24rpx; }
+.pip { flex: 1; height: 10rpx; border-radius: 6rpx; background: #2a3b32; }
+.pip-done { background: #3f8f6f; }
+.pip-cur { background: #7fd1ae; box-shadow: 0 0 14rpx #7fd1ae; }
+.stage-name { font-size: 26rpx; color: #7fd1ae; letter-spacing: 0.1em; margin-bottom: 6rpx; }
+.stage-desc { font-size: 24rpx; color: #8fa79a; line-height: 1.6; }
+
+/* 玩家身份条 */
+.viewer {
+  display: flex; align-items: center; gap: 22rpx;
+  background: linear-gradient(90deg, rgba(127, 209, 174, 0.14), transparent);
+  border: 1rpx solid #2a3b32; border-radius: 24rpx; padding: 26rpx 28rpx; margin: 26rpx 0;
+}
+.av-lg { font-size: 56rpx; }
+.vn { font-size: 30rpx; font-weight: 700; }
+.vt { font-size: 22rpx; color: #8fa79a; margin-top: 2rpx; }
+
+/* 剧本正文 */
+.scene { font-size: 22rpx; letter-spacing: 0.3em; color: #d9b46a; margin: 28rpx 0 10rpx; }
+.ptext { font-size: 27rpx; line-height: 1.85; white-space: pre-line; }
+.secret {
+  background: linear-gradient(180deg, rgba(201, 123, 123, 0.10), rgba(201, 123, 123, 0.04));
+  border: 1rpx solid rgba(201, 123, 123, 0.35); border-radius: 22rpx; padding: 24rpx 26rpx; margin-top: 18rpx;
+}
+.mission {
+  background: linear-gradient(180deg, rgba(217, 180, 106, 0.10), rgba(217, 180, 106, 0.04));
+  border: 1rpx solid rgba(217, 180, 106, 0.35); border-radius: 22rpx; padding: 24rpx 26rpx; margin-top: 18rpx;
+}
+.lbl { font-size: 22rpx; letter-spacing: 0.2em; margin-bottom: 12rpx; }
+.lbl-rose { color: #c97b7b; }
+.lbl-gold { color: #d9b46a; }
+
+/* 线索 */
+.clue {
+  border: 1rpx solid #2a3b32; border-radius: 22rpx; padding: 24rpx 26rpx; margin: 18rpx 0; background: #1d2a23;
+}
+.clue-locked { opacity: 0.45; }
+.ch { display: flex; justify-content: space-between; align-items: center; font-size: 26rpx; font-weight: 700; }
+.cb { font-size: 25rpx; line-height: 1.7; color: #8fa79a; margin-top: 14rpx; }
+.tag { font-size: 20rpx; padding: 4rpx 16rpx; border-radius: 40rpx; letter-spacing: 0.06em; }
+.tag-open { background: rgba(127, 209, 174, 0.18); color: #7fd1ae; }
+.tag-lock { background: #222e26; color: #8fa79a; }
+.empty { text-align: center; color: #8fa79a; font-size: 26rpx; padding: 50rpx 20rpx; line-height: 1.8; }

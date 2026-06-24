@@ -1,0 +1,9 @@
+{
+  "name": "game",
+  "version": "1.0.0",
+  "description": "薄荷镇剧本杀 · 云函数后端",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

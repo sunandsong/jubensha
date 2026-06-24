@@ -14,17 +14,23 @@
 
 ## 两套部署
 
-本仓库提供两套等价实现，按你用的平台选一套：
+本仓库提供三套等价实现，按你的场景选一套：
 
-| 目录 | 平台 | 后端 | 状态存储 |
-|------|------|------|----------|
-| [`worker/`](worker/) + [`public/`](public/) | Cloudflare Workers | Worker + Durable Object | DO storage（强一致） |
-| [`edgeone/`](edgeone/) | EdgeOne Pages | 边缘函数（catch-all） | Blob（strong 一致性） |
+| 目录 | 平台 | 后端 | 状态存储 | 适用 |
+|------|------|------|----------|------|
+| [`miniprogram-jubensha/`](miniprogram-jubensha/) | 微信小程序 + 云开发 | 云函数 `game` | 云数据库 rooms | **大陆玩家、免费、免备案**（推荐） |
+| [`worker/`](worker/) + [`public/`](public/) | Cloudflare Workers | Worker + Durable Object | DO storage（强一致） | 海外可访问 |
+| [`edgeone/`](edgeone/) | EdgeOne Pages | 边缘函数（catch-all） | Blob（strong 一致性） | 备案域名后大陆可用 |
 
-> EdgeOne 没有 Durable Objects，所以 `edgeone/` 版把房间状态改存 Blob；前端逻辑两套完全一致。
+> **大陆访问注意**：网页版（Cloudflare / EdgeOne 默认域名）在中国大陆被墙或受备案限制，普遍打不开。
+> 大陆玩家请用**微信小程序版**——跑在微信里免网站备案、云开发免费，群里点开即玩。
+> EdgeOne / Cloudflare 三套后端逻辑完全一致，只是托管平台不同。
 
 ### 部署 Cloudflare 版
 见 [部署指南.md](部署指南.md)。要点：`cd worker && npm i && npx wrangler deploy`，再把 `public/index.html` 里的 `API` 改成你的 Worker 地址后托管前端。
+
+### 部署微信小程序版（大陆推荐）
+见 [部署到微信小程序.md](部署到微信小程序.md)。要点：注册个人小程序 → 微信开发者工具导入 `miniprogram-jubensha/` → 开通云开发、建 `rooms` 集合 → 上传部署云函数 `game` → 用体验版加朋友即玩，免备案免费。
 
 ### 部署 EdgeOne 版
 见 [部署到EdgeOne.md](部署到EdgeOne.md)。要点：
